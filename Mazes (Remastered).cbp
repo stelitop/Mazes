@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Mazes (Remastered)" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Mazes (Remastered)" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Mazes (Remastered)" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="level.h" />
+		<Unit filename="levels/level.lvl" />
+		<Unit filename="levels/names.nms" />
+		<Unit filename="loadTextures.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="textures/Levels/AllSides.png" />
+		<Unit filename="textures/Levels/Empty.png" />
+		<Unit filename="textures/Levels/EmptySlot.png" />
+		<Unit filename="textures/Levels/End.png" />
+		<Unit filename="textures/Levels/Frame.png" />
+		<Unit filename="textures/Levels/Item.png" />
+		<Unit filename="textures/Levels/LeftRight.png" />
+		<Unit filename="textures/Levels/Locked.png" />
+		<Unit filename="textures/Levels/Moveable.png" />
+		<Unit filename="textures/Levels/Rotating1.png" />
+		<Unit filename="textures/Levels/Rotating2.png" />
+		<Unit filename="textures/Levels/Start.png" />
+		<Unit filename="textures/Levels/UpDown.png" />
+		<Unit filename="textures/Levels/Wall.png" />
+		<Unit filename="textures/PlayerIcons/Player1.png" />
+		<Unit filename="textures/window_icon.png">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
