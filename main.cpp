@@ -139,136 +139,11 @@ void drawLevel (RenderWindow * window, char lvl[100][100], pair<int,int> mazeSiz
                 s.setTexture(textures["Item"]);
                 break;
             case 'M':
-                s.setTexture(textures["Moveable"]);
+                s.setTexture(textures["Movable"]);
                 break;
-            }
-
-            window->draw(s);
-        }
-    }
-
-    pair<int,int> space;
-    space.first = origin.first/double(tileSz);
-    space.second = origin.second/double(tileSz);
-    if (int(origin.first)%tileSz != 0) space.first++;
-    if (int(origin.second)%tileSz != 0) space.second++;
-
-    for (int i=-space.first;i<=space.first+mazeSize.first;i++)
-    {
-        for (int j=-space.second;j<=-1;j++)
-        {
-            Sprite s;
-            s.setPosition(Vector2f(i*tileSz + origin.first, j*tileSz + origin.second));
-            s.setScale(Vector2f(double(tileSz)/texSz, double(tileSz)/texSz));
-            s.setTexture(textures["Wall"]);
-            window->draw(s);
-            s.setPosition(Vector2f(i*tileSz + origin.first, (-j+mazeSize.second-1)*tileSz + origin.second));
-            window->draw(s);
-        }
-    }
-    for (int i=-space.first;i<=-1;i++)
-    {
-        for (int j=0;j<mazeSize.second;j++)
-        {
-            Sprite s;
-            s.setPosition(Vector2f(i*tileSz + origin.first, j*tileSz + origin.second));
-            s.setScale(Vector2f(double(tileSz)/texSz, double(tileSz)/texSz));
-            s.setTexture(textures["Wall"]);
-            s.setColor(Color(255,255,255));
-            window->draw(s);
-            s.setPosition(Vector2f((-i+mazeSize.first-1)*tileSz + origin.first , j*tileSz + origin.second));
-            window->draw(s);
-        }
-    }
-
-    Sprite player;
-    IntRect r;
-    r.left = 0;
-    r.top = 0;
-    r.width = plSz;
-    r.height = plSz;
-
-    player.setPosition((playerPos.second)*double(tileSz)+origin.first+(texSz-plSz)/2*tileSz/plSz, (playerPos.first)*double(tileSz)+origin.second+(texSz-plSz)*tileSz/plSz);
-    player.setTexture(playerIcons[selectedIcon]);
-    player.setScale(Vector2f(tileSz/plSz, tileSz/plSz));
-
-    player.setTextureRect(r);
-    window->draw(player);
-
-    r.left = plSz;
-    player.setTextureRect(r);
-    player.setColor(selectedColor1);
-    window->draw(player);
-
-    r.left = 2*plSz;
-    player.setTextureRect(r);
-    player.setColor(selectedColor2);
-    window->draw(player);
-}
-
-void drawMenu (RenderWindow * window, char lvl[100][100], pair<int,int> mazeSize, pair<double,double> playerPos)
-{
-    mainCamera.corner = make_pair(WindowX/2, WindowY/2);
-
-    swap(mazeSize.first, mazeSize.second);
-    window->clear();
-
-    pair<int,int> screenSize = make_pair(mazeSize.first*tileSz, mazeSize.second*tileSz);
-    pair<double,double> origin = make_pair(0,0);
-    if (screenSize.first <= WindowX*99/100) {origin.first = WindowX/2-screenSize.first/2; TotalX = WindowX;}
-    else {origin.first = WindowX*1/200; TotalX = mazeSize.first*tileSz+WindowX*1/100;}
-    if (screenSize.second <= WindowY*99/100) {origin.second = WindowY/2-screenSize.second/2; TotalY = WindowY;}
-    else {origin.second = WindowY*1/200; TotalY = mazeSize.second*tileSz+WindowY*1/100;}
-
-    mainCamera.sz = make_pair(TotalX - WindowX, TotalY - WindowY);
-
-    origin.first += adit.first;
-    origin.second += adit.second;
-
-    for (int i=0; i<mazeSize.second; i++)
-    {
-        for (int j=0; j<mazeSize.first; j++)
-        {
-            Sprite s;
-            s.setPosition(Vector2f(j*tileSz + origin.first ,i*tileSz + origin.second));
-            s.setScale(Vector2f(double(tileSz)/texSz, double(tileSz)/texSz));
-
-            switch (lvl[i][j])
-            {
-            case 'S':
-                s.setTexture(textures["Start"]);
+            case 'I':
+                s.setTexture(textures["Sliding"]);
                 break;
-            case 's':
-                s.setTexture(textures["Locked"]);
-                break;
-            case '0':
-                s.setTexture(textures["Empty"]);
-                break;
-            case '1':
-                s.setTexture(textures["Wall"]);
-                break;
-            case '2':
-                s.setTexture(textures["TunnelUD"]);
-                break;
-            case '3':
-                s.setTexture(textures["TunnelLR"]);
-                break;
-            case '4':
-                s.setTexture(textures["TunnelAll"]);
-                break;
-            case '5':
-                s.setTexture(textures["Rotating1"]);
-                break;
-            case '6':
-                s.setTexture(textures["Rotating2"]);
-                break;
-            case 'A':
-                s.setTexture(textures["Item"]);
-                break;
-            case 'M':
-                s.setTexture(textures["Moveable"]);
-                break;
-
             }
 
             window->draw(s);
@@ -555,6 +430,19 @@ int main()
                                 }
                                 break;
                             }
+                            else if (dynamicLevel.level[curX][curY] == 'I')
+                            {
+                                if (dynamicLevel.level[curX-1][curY] != '0') break;
+                                while (dynamicLevel.level[curX-1][curY] == '0' && curX-1 >= 0)
+                                    curX--;
+                                addToMemory(false);
+                                dynamicLevel.level[curX][curY] = 'I';
+                                dynamicLevel.starting_position.first--;
+                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
+                                update = true;
+                                updateRotations();
+                                break;
+                            }
                             else break;
                         }
                     }
@@ -615,6 +503,19 @@ int main()
                                     update=true;
                                     updateRotations();
                                 }
+                                break;
+                            }
+                            else if (dynamicLevel.level[curX][curY] == 'I')
+                            {
+                                if (dynamicLevel.level[curX+1][curY] != '0') break;
+                                while (dynamicLevel.level[curX+1][curY] == '0' && curX+1 < dynamicLevel.size.first)
+                                    curX++;
+                                addToMemory(false);
+                                dynamicLevel.level[curX][curY] = 'I';
+                                dynamicLevel.starting_position.first++;
+                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
+                                update = true;
+                                updateRotations();
                                 break;
                             }
                             else break;
@@ -679,6 +580,19 @@ int main()
                                 }
                                 break;
                             }
+                            else if (dynamicLevel.level[curX][curY] == 'I')
+                            {
+                                if (dynamicLevel.level[curX][curY-1] != '0') break;
+                                while (dynamicLevel.level[curX][curY-1] == '0' && curY-1 >= 0)
+                                    curY--;
+                                addToMemory(false);
+                                dynamicLevel.level[curX][curY] = 'I';
+                                dynamicLevel.starting_position.second--;
+                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
+                                update = true;
+                                updateRotations();
+                                break;
+                            }
                             else break;
                         }
                     }
@@ -739,6 +653,19 @@ int main()
                                     updateRotations();
                                     update=true;
                                 }
+                                break;
+                            }
+                            else if (dynamicLevel.level[curX][curY] == 'I')
+                            {
+                                if (dynamicLevel.level[curX][curY+1] != '0') break;
+                                while (dynamicLevel.level[curX][curY+1] == '0' && curY+1 < dynamicLevel.size.second)
+                                    curY++;
+                                addToMemory(false);
+                                dynamicLevel.level[curX][curY] = 'I';
+                                dynamicLevel.starting_position.second++;
+                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
+                                update = true;
+                                updateRotations();
                                 break;
                             }
                             else break;

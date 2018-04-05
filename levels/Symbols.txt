@@ -1,0 +1,11 @@
+S - Start
+0 - Empty
+1 - Wall
+2 - Up-Down Tunnel
+3 - Left-Right Tunnel
+4 - All-Sides Tunnel
+5 - Up-Down Rotating Tunnel
+6 - Left-Right Rotating Tunnel
+A - Gem
+M - Movable Block
+I - Sliding(Ice) Block

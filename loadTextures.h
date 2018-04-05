@@ -11,12 +11,13 @@ void loadTextures()
     texs.push_back( make_pair("Empty", "textures/Levels/Empty.png") );
     texs.push_back( make_pair("Wall", "textures/Levels/Wall.png") );
     texs.push_back( make_pair("Item", "textures/Levels/Item.png") );
-    texs.push_back( make_pair("Moveable", "textures/Levels/Moveable.png") );
+    texs.push_back( make_pair("Movable", "textures/Levels/Movable.png") );
     texs.push_back( make_pair("TunnelUD" , "textures/Levels/UpDown.png"));
     texs.push_back( make_pair("TunnelLR" , "textures/Levels/LeftRight.png"));
     texs.push_back( make_pair("TunnelAll" , "textures/Levels/AllSides.png"));
     texs.push_back( make_pair("Rotating1" , "textures/Levels/Rotating1.png"));
     texs.push_back( make_pair("Rotating2" , "textures/Levels/Rotating2.png"));
+    texs.push_back( make_pair("Sliding" , "textures/Levels/Sliding.png"));
 
     texs.push_back( make_pair("Locked", "texture/Levels/Locked.png"));
 
