@@ -1,6 +1,7 @@
 #include<iostream>
 #include<SFML/Graphics.hpp>
 #include<fstream>
+#include<stack>
 
 using namespace std;
 using namespace sf;
@@ -24,6 +25,15 @@ enum Menu{MAIN,GAME,LOADING_LEVEL,LEVEL_BROWSE} menu = LOADING_LEVEL;
 int currentLevel = 1;
 
 level dynamicLevel;
+
+struct level_memory
+{
+    int row_sz,column_sz;
+    vector<char> row, column;
+    bool gem;
+};
+
+stack<level_memory> memory;
 
 void loadSettings()
 {
@@ -52,6 +62,19 @@ void loadSettings()
         }
     }
 }//
+
+void addToMemory(bool gem)
+{
+    level_memory add;
+    add.gem = gem;
+    add.row_sz = dynamicLevel.starting_position.first;
+    add.column_sz = dynamicLevel.starting_position.second;
+    for (int i=0; i<dynamicLevel.size.first;i++)
+        add.row.push_back(dynamicLevel.level[i][add.column_sz]);
+    for (int i=0; i<dynamicLevel.size.second;i++)
+        add.column.push_back(dynamicLevel.level[add.row_sz][i]);
+    memory.push(add);
+}
 
 struct cameraRect
 {
@@ -336,7 +359,7 @@ int main()
     WindowX = ScreenX;
     WindowY = ScreenY*7/10;
 
-    RenderWindow window(VideoMode(WindowX, WindowY), "Click R to restart", Style::Close);
+    RenderWindow window(VideoMode(WindowX, WindowY), "Click R to restart, Z to undo", Style::Close);
 
     //window.setVerticalSyncEnabled(true);
     Image icon;
@@ -388,6 +411,22 @@ int main()
 
             if (menu == GAME)
             {
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z)
+                {
+                    if (!memory.empty())
+                    {
+                        updateRotations();
+                        for (int i=0; i<dynamicLevel.size.first;i++)
+                            dynamicLevel.level[i][memory.top().column_sz] = memory.top().row[i];
+                        for (int i=0; i<dynamicLevel.size.second;i++)
+                            dynamicLevel.level[memory.top().row_sz][i] = memory.top().column[i];
+                        dynamicLevel.starting_position = make_pair(memory.top().row_sz, memory.top().column_sz);
+                        update = true;
+                        if (memory.top().gem == true) dynamicLevel.itemAmount++;
+                        memory.pop();
+                        break;
+                    }
+                }
                 if (event.type == Event::KeyPressed)
                 {
                     int curX = dynamicLevel.starting_position.first;
@@ -467,6 +506,7 @@ int main()
 
                             if (dynamicLevel.level[curX][curY] == '0')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 updateRotations();
@@ -474,6 +514,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'A')
                             {
+                                addToMemory(true);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 dynamicLevel.level[curX][curY] = '0';
@@ -483,6 +524,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'S')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
@@ -504,6 +546,7 @@ int main()
                                 if (curX == -1) break;
                                 else if (dynamicLevel.level[curX][curY] == '0')
                                 {
+                                    addToMemory(false);
                                     dynamicLevel.level[curX][curY] = 'M';
                                     dynamicLevel.starting_position.first--;
                                     dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
@@ -525,6 +568,7 @@ int main()
 
                             if (dynamicLevel.level[curX][curY] == '0')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 updateRotations();
@@ -532,6 +576,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'A')
                             {
+                                addToMemory(true);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 dynamicLevel.level[curX][curY] = '0';
@@ -541,6 +586,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'S')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
@@ -562,6 +608,7 @@ int main()
                                 if (curX == dynamicLevel.size.first) break;
                                 else if (dynamicLevel.level[curX][curY] == '0')
                                 {
+                                    addToMemory(false);
                                     dynamicLevel.level[curX][curY] = 'M';
                                     dynamicLevel.starting_position.first++;
                                     dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
@@ -583,6 +630,7 @@ int main()
 
                             if (dynamicLevel.level[curX][curY] == '0')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 updateRotations();
@@ -590,6 +638,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'A')
                             {
+                                addToMemory(true);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 dynamicLevel.level[curX][curY] = '0';
@@ -599,6 +648,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'S')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
@@ -620,6 +670,7 @@ int main()
                                 if (curY == -1) break;
                                 else if (dynamicLevel.level[curX][curY] == '0')
                                 {
+                                    addToMemory(false);
                                     dynamicLevel.level[curX][curY] = 'M';
                                     dynamicLevel.starting_position.second--;
                                     dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
@@ -641,6 +692,7 @@ int main()
 
                             if (dynamicLevel.level[curX][curY] == '0')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 updateRotations();
@@ -648,6 +700,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'A')
                             {
+                                addToMemory(true);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 dynamicLevel.level[curX][curY] = '0';
@@ -657,6 +710,7 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'S')
                             {
+                                addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
@@ -678,6 +732,7 @@ int main()
                                 if (curY == dynamicLevel.size.second) break;
                                 else if (dynamicLevel.level[curX][curY] == '0')
                                 {
+                                    addToMemory(false);
                                     dynamicLevel.level[curX][curY] = 'M';
                                     dynamicLevel.starting_position.second++;
                                     dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
@@ -700,6 +755,7 @@ int main()
             if (menu == LOADING_LEVEL)
             {
                 dynamicLevel = levels[currentLevel];
+                while (!memory.empty()) memory.pop();
                 menu = GAME;
                 update = true;
             }
