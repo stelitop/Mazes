@@ -432,16 +432,31 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'I')
                             {
-                                if (dynamicLevel.level[curX-1][curY] != '0') break;
-                                while (dynamicLevel.level[curX-1][curY] == '0' && curX-1 >= 0)
+                                int iceCounter=1,diff=0;
+                                while (true)
+                                {
                                     curX--;
-                                addToMemory(false);
-                                dynamicLevel.level[curX][curY] = 'I';
-                                dynamicLevel.starting_position.first--;
-                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
-                                update = true;
-                                updateRotations();
-                                break;
+                                    diff++;
+                                    if (curX == -1) break;
+                                    if (dynamicLevel.level[curX][curY] == '0');
+                                    else if (dynamicLevel.level[curX][curY] == 'I') iceCounter++;
+                                    else break;
+                                }
+                                curX++;
+                                if (diff == iceCounter) break;
+                                else
+                                {
+                                    addToMemory(false);
+                                    for (int i=curX; i<curX+iceCounter; i++)
+                                        dynamicLevel.level[i][curY] = 'I';
+                                    for (int i=curX+iceCounter; i<curX+diff; i++)
+                                        dynamicLevel.level[i][curY] = '0';
+
+                                    dynamicLevel.starting_position.first--;
+                                    update = true;
+                                    updateRotations();
+                                    break;
+                                }
                             }
                             else break;
                         }
@@ -507,16 +522,31 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'I')
                             {
-                                if (dynamicLevel.level[curX+1][curY] != '0') break;
-                                while (dynamicLevel.level[curX+1][curY] == '0' && curX+1 < dynamicLevel.size.first)
+                                int iceCounter=1,diff=0;
+                                while (true)
+                                {
                                     curX++;
-                                addToMemory(false);
-                                dynamicLevel.level[curX][curY] = 'I';
-                                dynamicLevel.starting_position.first++;
-                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
-                                update = true;
-                                updateRotations();
-                                break;
+                                    diff++;
+                                    if (curX == dynamicLevel.size.first) break;
+                                    if (dynamicLevel.level[curX][curY] == '0');
+                                    else if (dynamicLevel.level[curX][curY] == 'I') iceCounter++;
+                                    else break;
+                                }
+                                curX--;
+                                if (diff == iceCounter) break;
+                                else
+                                {
+                                    addToMemory(false);
+                                    for (int i=curX; i>curX-iceCounter; i--)
+                                        dynamicLevel.level[i][curY] = 'I';
+                                    for (int i=curX-iceCounter; i>curX+-diff; i--)
+                                        dynamicLevel.level[i][curY] = '0';
+
+                                    dynamicLevel.starting_position.first++;
+                                    update = true;
+                                    updateRotations();
+                                    break;
+                                }
                             }
                             else break;
                         }
@@ -582,16 +612,31 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'I')
                             {
-                                if (dynamicLevel.level[curX][curY-1] != '0') break;
-                                while (dynamicLevel.level[curX][curY-1] == '0' && curY-1 >= 0)
+                                int iceCounter=1,diff=0;
+                                while (true)
+                                {
                                     curY--;
-                                addToMemory(false);
-                                dynamicLevel.level[curX][curY] = 'I';
-                                dynamicLevel.starting_position.second--;
-                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
-                                update = true;
-                                updateRotations();
-                                break;
+                                    diff++;
+                                    if (curY == -1) break;
+                                    if (dynamicLevel.level[curX][curY] == '0');
+                                    else if (dynamicLevel.level[curX][curY] == 'I') iceCounter++;
+                                    else break;
+                                }
+                                curY++;
+                                if (diff == iceCounter) break;
+                                else
+                                {
+                                    addToMemory(false);
+                                    for (int i=curY; i<curY+iceCounter; i++)
+                                        dynamicLevel.level[curX][i] = 'I';
+                                    for (int i=curY+iceCounter; i<curY+diff; i++)
+                                        dynamicLevel.level[curX][i] = '0';
+
+                                    dynamicLevel.starting_position.second--;
+                                    update = true;
+                                    updateRotations();
+                                    break;
+                                }
                             }
                             else break;
                         }
@@ -657,16 +702,31 @@ int main()
                             }
                             else if (dynamicLevel.level[curX][curY] == 'I')
                             {
-                                if (dynamicLevel.level[curX][curY+1] != '0') break;
-                                while (dynamicLevel.level[curX][curY+1] == '0' && curY+1 < dynamicLevel.size.second)
+                                int iceCounter=1,diff=0;
+                                while (true)
+                                {
                                     curY++;
-                                addToMemory(false);
-                                dynamicLevel.level[curX][curY] = 'I';
-                                dynamicLevel.starting_position.second++;
-                                dynamicLevel.level[int(dynamicLevel.starting_position.first)][int(dynamicLevel.starting_position.second)] = '0';
-                                update = true;
-                                updateRotations();
-                                break;
+                                    diff++;
+                                    if (curY == dynamicLevel.size.second) break;
+                                    if (dynamicLevel.level[curX][curY] == '0');
+                                    else if (dynamicLevel.level[curX][curY] == 'I') iceCounter++;
+                                    else break;
+                                }
+                                curY--;
+                                if (diff == iceCounter) break;
+                                else
+                                {
+                                    addToMemory(false);
+                                    for (int i=curY; i>curY-iceCounter; i--)
+                                        dynamicLevel.level[curX][i] = 'I';
+                                    for (int i=curY-iceCounter; i>curY-diff; i--)
+                                        dynamicLevel.level[curX][i] = '0';
+
+                                    dynamicLevel.starting_position.second++;
+                                    update = true;
+                                    updateRotations();
+                                    break;
+                                }
                             }
                             else break;
                         }
