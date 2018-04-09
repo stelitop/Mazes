@@ -21,7 +21,7 @@ Color selectedColor1(0,100,155), selectedColor2(0,100,155);
 
 enum Direction{UP,DOWN,LEFT,RIGHT,VOID} animDir=VOID;
 
-enum Menu{MAIN,GAME,LOADING_LEVEL,LEVEL_BROWSE} menu = LOADING_LEVEL;
+enum Menu{MAIN,GAME,LOADING_LEVEL,LEVEL_BROWSE, LOADING_BROWSE} menu = LOADING_BROWSE;
 int currentLevel = 1;
 
 level dynamicLevel;
@@ -76,6 +76,11 @@ void addToMemory(bool gem)
     memory.push(add);
 }
 
+void endLevel(RenderWindow * window, bool result)
+{
+    menu = LOADING_BROWSE;
+}
+
 struct cameraRect
 {
     pair<double, double> corner;
@@ -113,6 +118,9 @@ void drawLevel (RenderWindow * window, char lvl[100][100], pair<int,int> mazeSiz
             {
             case 'S':
                 s.setTexture(textures["Start"]);
+                break;
+            case 's':
+                s.setTexture(textures["Locked"]);
                 break;
             case '0':
                 s.setTexture(textures["Empty"]);
@@ -223,6 +231,17 @@ void updateRotations ()
     }
 }
 
+int checkForRoom (pair<int,int> pos)
+{
+    for (int i=1;i<=amountDoors;i++)
+    {
+        if (levelDoors[i].x == pos.first && levelDoors[i].y == pos.second && dynamicLevel.level[pos.first][pos.second] == 'S')
+            return i;
+
+    }
+    return 0;
+}
+
 int main()
 {
     loadTextures();
@@ -284,7 +303,21 @@ int main()
                 }
             }
 
-            if (menu == GAME)
+            if (menu == LEVEL_BROWSE)
+            {
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Return)
+                {
+                    int curr = checkForRoom(dynamicLevel.starting_position);
+                    if (curr != 0)
+                    {
+                        currentLevel = curr;
+                        menu = LOADING_LEVEL;
+                        update = true;
+                    }
+                }
+            }
+
+            if (menu == GAME || menu == LEVEL_BROWSE)
             {
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z)
                 {
@@ -307,7 +340,7 @@ int main()
                     int curX = dynamicLevel.starting_position.first;
                     int curY = dynamicLevel.starting_position.second;
 
-                    if (Keyboard::isKeyPressed(Keyboard::R))
+                    if (Keyboard::isKeyPressed(Keyboard::R) && menu == GAME)
                         menu = LOADING_LEVEL;
 
                     if (Keyboard::isKeyPressed(Keyboard::LControl))
@@ -341,33 +374,38 @@ int main()
 //
                     int doBut=0;
 
+                    if (event.key.code == Keyboard::Escape)
+                    {
+                        endLevel(&window, false);
+                    }
+
                     if (animDir == VOID || animDir == UP)
                     {
-                        if (event.key.code == Keyboard::Up) doBut=1;
-                        if (event.key.code == Keyboard::Down) doBut=2;
-                        if (event.key.code == Keyboard::Left) doBut=3;
-                        if (event.key.code == Keyboard::Right) doBut=4;
+                        if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W) doBut=1;
+                        if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S) doBut=2;
+                        if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A) doBut=3;
+                        if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D) doBut=4;
                     }
                     else if (animDir == DOWN)
                     {
-                        if (event.key.code == Keyboard::Down) doBut=2;
-                        if (event.key.code == Keyboard::Up) doBut=1;
-                        if (event.key.code == Keyboard::Left) doBut=3;
-                        if (event.key.code == Keyboard::Right) doBut=4;
+                        if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S) doBut=2;
+                        if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W) doBut=1;
+                        if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A) doBut=3;
+                        if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D) doBut=4;
                     }
                     else if (animDir == LEFT)
                     {
-                        if (event.key.code == Keyboard::Down) doBut=2;
-                        if (event.key.code == Keyboard::Left) doBut=3;
-                        if (event.key.code == Keyboard::Up) doBut=1;
-                        if (event.key.code == Keyboard::Right) doBut=4;
+                        if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A) doBut=3;
+                        if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S) doBut=2;
+                        if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W) doBut=1;
+                        if (event.key.code == Keyboard::Right || event.key.code == Keyboard::R) doBut=4;
                     }
                     else
                     {
-                        if (event.key.code == Keyboard::Down) doBut=2;
-                        if (event.key.code == Keyboard::Left) doBut=3;
-                        if (event.key.code == Keyboard::Right) doBut=4;
-                        if (event.key.code == Keyboard::Up) doBut=1;
+                        if (event.key.code == Keyboard::Right || event.key.code == Keyboard::D) doBut=4;
+                        if (event.key.code == Keyboard::Down || event.key.code == Keyboard::S) doBut=2;
+                        if (event.key.code == Keyboard::Left || event.key.code == Keyboard::A) doBut=3;
+                        if (event.key.code == Keyboard::Up || event.key.code == Keyboard::W) doBut=1;
                     }
 
 
@@ -379,7 +417,7 @@ int main()
                             curX--;
                             if (curX < 0) break;
 
-                            if (dynamicLevel.level[curX][curY] == '0')
+                            if (dynamicLevel.level[curX][curY] == '0' || dynamicLevel.level[curX][curY] == 's')
                             {
                                 addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
@@ -404,7 +442,7 @@ int main()
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
                                 {
-                                    window.close();
+                                    endLevel(&window, true);
                                 }
                                 updateRotations();
                                 break;
@@ -469,7 +507,7 @@ int main()
                             curX++;
                             if (curX >= dynamicLevel.size.first) break;
 
-                            if (dynamicLevel.level[curX][curY] == '0')
+                            if (dynamicLevel.level[curX][curY] == '0' || dynamicLevel.level[curX][curY] == 's')
                             {
                                 addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
@@ -494,7 +532,7 @@ int main()
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
                                 {
-                                    window.close();
+                                    endLevel(&window, true);
                                 }
                                 updateRotations();
                                 break;
@@ -559,7 +597,7 @@ int main()
                             curY--;
                             if (curY < 0) break;
 
-                            if (dynamicLevel.level[curX][curY] == '0')
+                            if (dynamicLevel.level[curX][curY] == '0' || dynamicLevel.level[curX][curY] == 's')
                             {
                                 addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
@@ -584,7 +622,7 @@ int main()
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
                                 {
-                                    window.close();
+                                    endLevel(&window, true);
                                 }
                                 updateRotations();
                                 break;
@@ -649,7 +687,7 @@ int main()
                             curY++;
                             if (curY >= dynamicLevel.size.second) break;
 
-                            if (dynamicLevel.level[curX][curY] == '0')
+                            if (dynamicLevel.level[curX][curY] == '0' || dynamicLevel.level[curX][curY] == 's')
                             {
                                 addToMemory(false);
                                 dynamicLevel.starting_position = make_pair(curX, curY);
@@ -674,7 +712,7 @@ int main()
                                 wait = animTime;
                                 if (dynamicLevel.itemAmount == 0)
                                 {
-                                    window.close();
+                                    endLevel(&window, true);
                                 }
                                 updateRotations();
                                 break;
@@ -744,6 +782,7 @@ int main()
                 dynamicLevel = levels[currentLevel];
                 while (!memory.empty()) memory.pop();
                 menu = GAME;
+                window.setTitle("Click R to restart, Z to undo, Esc to leave the level");
                 update = true;
             }
             else if (menu == GAME)
@@ -752,9 +791,19 @@ int main()
 
                 window.display();
             }
+            else if (menu == LOADING_BROWSE)
+            {
+                dynamicLevel = levelmap;
+                menu = LEVEL_BROWSE;
+                while (!memory.empty()) memory.pop();
+                window.setTitle("Click Enter on an unlocked door to enter the level");
+                update = true;
+            }
             else if (menu == LEVEL_BROWSE)
             {
-
+                levelmap = dynamicLevel;
+                drawLevel(&window, levelmap.level, levelmap.size, levelmap.starting_position);
+                window.display();
             }
         }
     }

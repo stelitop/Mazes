@@ -6,7 +6,7 @@ int amountOfLevels;
 struct level
 {
     char level[100][100];
-    pair<double,double> starting_position;
+    pair<double,double> starting_position = make_pair(0,0);
     pair<int,int> size;
     int itemAmount=0;
 
@@ -54,10 +54,19 @@ struct level
         }
     }
 
-}levels[1000];
+}levels[1000], levelmap;
+
+struct levelDoor
+{
+    int x;
+    int y;
+}levelDoors[1000];
+int amountDoors;
 
 void loadLevels()
 {
+    levelmap.loadLvl("levels/map.map");
+    levelmap.itemAmount=-1000;
     ifstream file;
     string x;
     file.open("levels/names.nms");
@@ -72,8 +81,22 @@ void loadLevels()
         name = "levels/"+name;
 
         levels[amountOfLevels].loadLvl(name);
-
     }
+    ifstream locats;
+    int counter=0;
+    locats.open("levels/locations.map");
+    while (getline(locats,x))
+    {
+        counter++;
+        int i=0,num=0;
+        for (;x[i]!=';';i++) num=num*10+x[i]-'0';
+        levelDoors[counter].x = num;
+        i++;
+        num=0;
+        for (;x[i]!=';';i++) num=num*10+x[i]-'0';
+        levelDoors[counter].y = num;
+    }
+    amountDoors = counter;
 }
 
 void cleanLevels()

@@ -18,8 +18,7 @@ void loadTextures()
     texs.push_back( make_pair("Rotating1" , "textures/Levels/Rotating1.png"));
     texs.push_back( make_pair("Rotating2" , "textures/Levels/Rotating2.png"));
     texs.push_back( make_pair("Sliding" , "textures/Levels/Sliding.png"));
-
-    texs.push_back( make_pair("Locked", "texture/Levels/Locked.png"));
+    texs.push_back( make_pair("Locked", "textures/Levels/Locked.png"));
 
     for (unsigned int i=0;i<texs.size();i++)
     {
